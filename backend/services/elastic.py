@@ -34,7 +34,8 @@ class AsyncElasticService:
         result = await AsyncElasticService.client.search(
             index='vect_search_products',
             knn=es_query_dict,
-            source=['product_key', 'description']
+            source=['product_key', 'description'],
+            min_score=0.50
         )
 
         return {
