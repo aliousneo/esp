@@ -7,20 +7,12 @@
     <h1>{{ greeting }}</h1>
     <input type="search" 
         hx-validate="true"
-        name="query" placeholder="Begin Typing To Search Users..." 
+        name="query" placeholder="Begin Typing To Search products..." 
         hx-post="/api/search" 
         hx-trigger="search" 
         hx-target="#search-results">
 
-    <table class="table">
-        <thead>
-        <tr>
-        <th>Product num.</th>
-        <th>Description</th>
-        </tr>
-        </thead>
-        <tbody id="search-results">
-        </tbody>
+    <table class="table" id="search-results">
     </table>
     <script src="https://unpkg.com/htmx.org@1.9.6/dist/htmx.min.js"></script>
 </body>

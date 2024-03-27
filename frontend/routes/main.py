@@ -8,4 +8,4 @@ home_page_router = APIRouter()
 @home_page_router.get('/', response_class=HTMLResponse, status_code=200)
 @htmx('index', 'index')
 async def root_page(request: Request):
-    return {'greeting': 'Hello World'}
+    return {'greeting': 'Product Search'}

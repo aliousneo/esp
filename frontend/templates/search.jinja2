@@ -1,5 +1,14 @@
-<ul>
+<thead>
+    <tr>
+        <th>Product key</th>
+        <th>Description</th>
+    </tr>
+</thead>
+<tbody>
     {% for result in search_results %}
-        <li>{{ result.description }}</li>
+    <tr>
+        <td>{{ result.product_key }}</td>
+        <td>{{ result.description }}</td>
+    </tr>
     {% endfor %}
-</ul>
+</tbody>
