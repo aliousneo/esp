@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hello World</title>
+    <title>Product Search</title>
 </head>
 <body>
     <h1>{{ greeting }}</h1>
@@ -9,15 +9,14 @@
         hx-validate="true"
         name="query" placeholder="Begin Typing To Search Users..." 
         hx-post="/api/search" 
-        hx-trigger="input[this.value.length > 2] changed, search" 
+        hx-trigger="search" 
         hx-target="#search-results">
 
     <table class="table">
         <thead>
         <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Email</th>
+        <th>Product num.</th>
+        <th>Description</th>
         </tr>
         </thead>
         <tbody id="search-results">
