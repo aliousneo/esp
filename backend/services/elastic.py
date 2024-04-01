@@ -1,9 +1,8 @@
 from __future__ import annotations
+import re
 from typing import ClassVar
-import time
-from openai import OpenAI
-
 from elasticsearch import AsyncElasticsearch
+from openai import OpenAI
 
 open_ai_client = OpenAI(api_key="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")
 
@@ -30,45 +29,113 @@ class AsyncElasticService:
 
     @classmethod
     async def search(cls, query: str) -> dict[str, list[dict[str, str]]]:
-        start_time = time.time()
-
-        filter_query = {
-            "knn": {
-                "field": "search_vector",
-                "query_vector": get_embedding(query),
-                "k": 5,
-                "num_candidates": 50,
-                "boost": 0.1
-            },
-            "query": {
-                "bool": {
-                    "should": [
-                        {
-                            "match": {
-                                "description": query
+        product_code_in_text_pattern = r'\b[A-Z]{2}-\d{3}-\d{2,3}\s?[A-Z]{0,2}\b'
+        product_code_pattern = r'^[A-Z]{2}-\d{3}-\d{2,3}\s?[A-Z]{0,2}$'
+        if re.match(product_code_pattern, query):
+            filter_query = {
+                "query": {
+                    "match": {
+                        "product_key": query
+                    }
+                }
+            }
+        else:
+            filter_query = {
+                "knn": {
+                    "field": "search_vector",
+                    "query_vector": get_embedding(query),
+                    "k": 1,
+                    "num_candidates": 100,
+                    "boost": 0.1
+                },
+                "query": {
+                    "bool": {
+                        "should": [
+                            {
+                                "match": {
+                                    "description": {
+                                        "query": query,
+                                        "boost": 7,
+                                        "fuzziness": 2
+                                    },
+                                },
+                            },
+                            {
+                                "term": {
+                                    "description": {
+                                        "value": query,
+                                        "boost": 10
+                                    },
+                                }
+                            },
+                            {
+                                "match": {
+                                    "search_patterns": {
+                                        "query": query,
+                                        "boost": 3,
+                                        "fuzziness": 2
+                                    },
+                                }
                             }
-                        },
+                        ]
+                    }
+                }
+            }
+
+            if re.match(product_code_in_text_pattern, query):
+                prod_number = re.findall(product_code_in_text_pattern, query)
+                if prod_number:
+                    filter_query['query']['bool']['must'] = [
                         {
                             "match": {
-                                "search_patterns": query
+                                "product_key": {
+                                    "query": prod_number[0].strip(),
+                                    "boost": 15
+                                }
                             }
                         }
                     ]
-                }
-            }
-        }
 
-        print("--- Embedings %s seconds ---" % (time.time() - start_time))
+            pattern = r"[-+]?(?:\d*\.*\d+)"
+            number = [num.replace(',', '.') for num in re.findall(pattern, query)]
 
-        start_time = time.time()
+            if number and not re.match(product_code_pattern, query):
+                number = float(number[0])
+                if not filter_query['query']['bool'].get('must'):
+                    filter_query['query']['bool']['must'] = []
+                filter_query['query']['bool']['must'].extend(
+                    [
+                        {
+                            "bool": {
+                                "should": [
+                                    {
+                                        "terms": {
+                                            "dimensions": [
+                                                number
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "range": {
+                                            "dimensions": {
+                                                "gte": number - 0.5,
+                                                "lte": number + 0.5,
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                )
+
         result = await AsyncElasticService.client.search(
-            index='product_search',
+            index='product_search_with_dimensions',
             body=filter_query,
             source=['product_key', 'description'],
             min_score=0.50
         )
 
-        print("--- query took %s seconds ---" % (time.time() - start_time))
         return {
             'search_results': [
                 {
