@@ -4,7 +4,7 @@ from typing import ClassVar
 from elasticsearch import AsyncElasticsearch
 from openai import OpenAI
 
-open_ai_client = OpenAI(api_key="")
+open_ai_client = OpenAI(api_key="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")
 
 
 def get_embedding(text: str, model: str = "text-embedding-ada-002"):
