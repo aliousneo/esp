@@ -5,12 +5,15 @@
 </head>
 <body>
     <h1>{{ greeting }}</h1>
+    <p>Please type something and hit Enter</p>
     <input type="search" 
         hx-validate="true"
         name="query" placeholder="Begin Typing To Search products..." 
         hx-post="/api/search" 
         hx-trigger="search" 
-        hx-target="#search-results">
+        hx-target="#search-results"
+        style="width: 400px"
+    >
 
     <table class="table" id="search-results">
     </table>
