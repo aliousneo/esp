@@ -8,7 +8,7 @@ from elasticsearch.helpers import async_streaming_bulk
 from openai import OpenAI
 import string
 
-open_ai_client = OpenAI(api_key="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")
+open_ai_client = OpenAI(api_key="sk-proj-e1s0JQ28eyqAstl3Dn1LT3BlbkFJ7mALdibiQ5jy7GYiLCUv")
 
 ES_INDEX_NAME = "vector_search"
 # ES_INDEX_NAME = "product_search_with_dimensions_updated"
