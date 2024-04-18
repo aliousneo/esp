@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 import re
 import json
 import pandas as pd
@@ -8,7 +9,7 @@ from elasticsearch.helpers import async_streaming_bulk
 from openai import OpenAI
 import string
 
-open_ai_client = OpenAI(api_key="sk-proj-e1s0JQ28eyqAstl3Dn1LT3BlbkFJ7mALdibiQ5jy7GYiLCUv")
+open_ai_client = OpenAI(api_key=os.environ.get('OPEN_AI_KEY', ""))
 
 ES_INDEX_NAME = "vector_search"
 # ES_INDEX_NAME = "product_search_with_dimensions_updated"
