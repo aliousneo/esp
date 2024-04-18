@@ -14,6 +14,7 @@ from frontend.routes.main import home_page_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await AsyncElasticService.connect()
+    # await AsyncElasticService.ingest_data_into_es_index()
     yield
     await AsyncElasticService.close_connection()
 
