@@ -11,7 +11,7 @@ import string
 
 open_ai_client = OpenAI(api_key=os.environ.get('OPEN_AI_KEY', ""))
 
-ES_INDEX_NAME = "vector_search"
+ES_INDEX_NAME = os.environ.get('ES_INDEX_NAME', "vector_search")
 # ES_INDEX_NAME = "product_search_with_dimensions_updated"
 
 
@@ -26,8 +26,8 @@ class AsyncElasticService:
     products_info_json_filename: ClassVar[str] = 'all_data.json'
     products_info_csv_filename: ClassVar[str] = 'all_data.csv'
     inbound_data_excel_files: ClassVar[dict[str, str]] = {
-        'products_descriptions': '/Users/aleksandrtynanov/Documents/work/other/esp/ProductList 2024.xlsx',
-        'ai_search_patterns': '/Users/aleksandrtynanov/Documents/work/other/esp/Customer Data for AI Searching.xlsx'
+        'products_descriptions': os.environ.get('PRODUCT_FILE', ""),
+        'ai_search_patterns': os.environ.get('PATTERNS_FILE', "")
     }
 
     es_index_name: ClassVar[str] = ES_INDEX_NAME
@@ -68,8 +68,8 @@ class AsyncElasticService:
     @classmethod
     async def connect(cls: type[AsyncElasticService]) -> None:
         cls.client = AsyncElasticsearch(
-            cloud_id="Vector_Search_Cluster:ZXVyb3BlLXdlc3QyLmdjcC5lbGFzdGljLWNsb3VkLmNvbTo0NDMkOTRhMjRlMWZhMGY0NDQzNGI3N2Q1MDlkMzU2OTNhNDgkNGM2YmI2MGZmOGI3NGVmYmI1Y2VjZGUxMDA4ZmFiNjA=",
-            basic_auth=("elastic", "X2t97nvmIsTRHhxKtVI7o63X")
+            cloud_id=os.environ.get('ES_CLOUD_ID', ""),
+            basic_auth=(os.environ.get('ES_USERNAME', ""), os.environ.get('ES_PASSWORD', ""))
         )
 
     @classmethod
