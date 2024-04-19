@@ -64,7 +64,6 @@ class AsyncElasticService:
 
     ]
 
-    # 34b839768db6442c8ffd016a44dc2a46:ZXUtd2VzdC0xLmF3cy5mb3VuZC5pbyQxZDdkOWEyMThjYWU0MmUzOGUyZGM3YmJkZDM1ZDA0NyRjZDEwMmZiYTFjNDg0YjBhYTZkYjE1MjRkM2U1NDMzMw==
     @classmethod
     async def connect(cls: type[AsyncElasticService]) -> None:
         cls.client = AsyncElasticsearch(
@@ -121,6 +120,14 @@ class AsyncElasticService:
                                                     "boost": 1.5
                                                 },
                                             },
+                                        },
+                                        {
+                                            "match": {
+                                                "main_description_part": {
+                                                    "query": query,
+                                                    "boost": 1.5
+                                                },
+                                            }
                                         },
                                         {
                                             "term": {
@@ -188,10 +195,16 @@ class AsyncElasticService:
                     [
                         {
                             "bool": {
-                                "must": [
+                                "should": [
                                     {
                                         "terms": {
                                             "dimensions": numbers
+                                        }
+                                    },
+                                    {
+                                        "terms": {
+                                            "main_description_part_dimensions": numbers,
+                                            "boost": 5
                                         }
                                     }
                                 ]
@@ -353,9 +366,3 @@ class AsyncElasticService:
         # Store products info in json file
         with open(cls.products_info_json_filename, 'w') as f:
             json.dump(all_products_info_list, f)
-
-
-
-
-# AsyncElasticService.connect()
-# AsyncElasticService.ingest_data_into_es_index()
