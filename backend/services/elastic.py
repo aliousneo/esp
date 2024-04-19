@@ -357,5 +357,5 @@ class AsyncElasticService:
 
 
 
-AsyncElasticService.connect()
-AsyncElasticService.ingest_data_into_es_index()
+# AsyncElasticService.connect()
+# AsyncElasticService.ingest_data_into_es_index()
